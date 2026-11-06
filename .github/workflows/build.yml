@@ -13,37 +13,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      ANDROID_HOME: /usr/local/lib/android/sdk
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK
+      - name: Install Android SDK
         run: |
-          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-          find "$ANDROID_HOME/cmdline-tools" -name sdkmanager
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
-      - name: Accept SDK Licenses
-        run: |
-          yes | "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager" --licenses || true
+          yes | "$SDKMANAGER" --licenses || true
 
-      - name: Install SDK Packages
-        run: |
-          "$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager" \
-          "platforms;android-35" \
-          "build-tools;35.0.0"
+          "$SDKMANAGER" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
 
       - name: Check ZIP
         run: |
-          ls -lh
           test -f GUNDAM_EWALLET_ANDROID_SINGLE_UPLOAD.zip
 
       - name: Extract Project
